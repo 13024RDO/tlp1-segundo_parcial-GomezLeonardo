@@ -32,6 +32,24 @@ app.get('/books/:id', (req, res) => {
 });
 
 
+let id = 2;  
+
+app.post('/books', (req, res) => {
+    const { title, author, year } = req.body;
+    
+    if (!title || !author || !year) {
+        return res.status(400).json({ error: 'Todos los parámetros son requeridos' });
+    }
+    
+    const existingBook = db.find(b => b.title === title && b.author === author && b.year === year);
+    if (existingBook) {
+        return res.status(400).json({ error: 'El libro ya existe' });
+    }
+    
+    const newBook = { id: id++, title, author, year };  // Utilizar id y luego incrementarlo
+    db.push(newBook);
+    res.status(201).json(newBook);
+});
 
 
 
