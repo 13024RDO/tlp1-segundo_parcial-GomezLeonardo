@@ -32,23 +32,24 @@ app.get('/books/:id', (req, res) => {
 });
 
 
-app.post('/books', (req, res) => {
-    const { title, author, year } = req.body;
-    
-    if (!title || !author || !year) {
-        return res.status(400).json({ error: 'Todos los parametros son requeridos' });
-    }
-    
-    const existingBook = books.find(b => b.title === title && b.author === author && b.year === year);
-    if (existingBook) {
-        return res.status(400).json({ error: 'El libro ya exite' });
-    }
-    
-    const newBook = { id: nextId++, title, author, year };
-    books.push(newBook);
-    res.status(201).json(newBook);
-});
 
+
+
+
+
+
+
+app.delete('/books/:id', (req, res) => {
+    const bookId = parseInt(req.params.id, 10);
+    const bookIndex = db.findIndex(b => b.id === bookId);
+    
+    if (bookIndex === -1) {
+        return res.status(404).json({ error: 'Book not found' });
+    }
+
+    db.splice(bookIndex, 1);
+    res.status(204).end();
+});
 
 
 app.listen(3000, () => {
