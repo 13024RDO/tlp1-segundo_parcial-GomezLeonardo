@@ -8,8 +8,6 @@ app.use(express.json());
 
 
 
-
-
 app.get("/", (req,res)=>{
     res.send("Página de Inicio");
 });
@@ -32,7 +30,7 @@ app.get('/books/:id', (req, res) => {
 });
 
 
-let id = 2;  
+let id = 1;  
 
 app.post('/books', (req, res) => {
     const { title, author, year } = req.body;
@@ -53,8 +51,26 @@ app.post('/books', (req, res) => {
 
 
 
-
-
+app.put('/books/:id', (req, res) => {
+    const bookId = parseInt(req.params.id, 10);
+    const { title, author, year } = req.body;
+    
+    const book = db.find(b => b.id === bookId);
+    
+    if (!book) {
+        return res.status(404).json({ error: 'Libro no encontrado' });
+    }
+    
+    if (!title || !author || !year) {
+        return res.status(400).json({ error: 'Todos los datos son requeridos' });
+    }
+    
+    book.title = title;
+    book.author = author;
+    book.year = year;
+    
+    res.json(book);
+});
 
 
 app.delete('/books/:id', (req, res) => {
@@ -62,7 +78,7 @@ app.delete('/books/:id', (req, res) => {
     const bookIndex = db.findIndex(b => b.id === bookId);
     
     if (bookIndex === -1) {
-        return res.status(404).json({ error: 'Book not found' });
+        return res.status(404).json({ error: 'El libro no existe' });
     }
 
     db.splice(bookIndex, 1);
